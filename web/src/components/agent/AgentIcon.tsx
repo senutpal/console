@@ -202,6 +202,7 @@ export function AgentIcon({ provider, className = 'w-5 h-5' }: AgentIconProps) {
       return (
         <svg className={className} viewBox="0 0 24 24" fill="none">
           {/* Kagenti icon - container ship on water (from official logo) */}
+          <rect x="0" y="0" width="24" height="24" rx="5" className="fill-gray-800 dark:fill-gray-900" />
           <rect x="4" y="8" width="16" height="6" rx="1" fill="#0EA5E9" />
           {/* Containers on deck */}
           <rect x="5" y="5" width="4" height="3" rx="0.5" fill="#7C3AED" />
