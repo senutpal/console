@@ -104,7 +104,7 @@ function SecurityIssuesInternal({ config }: SecurityIssuesProps) {
 
   // Fetch data with caching (stale-while-revalidate pattern)
   // Cache persists to IndexedDB so data shows immediately on navigation/reload
-  const { issues: cachedIssues, isLoading: cachedLoading, isDemoFallback, error: cachedError, isFailed: cachedFailed, consecutiveFailures: cachedFailures } = useCachedSecurityIssues(clusterConfig, namespaceConfig)
+  const { issues: cachedIssues, isLoading: cachedLoading, isDemoFallback, error: cachedError, isFailed: cachedFailed, consecutiveFailures: cachedFailures, lastRefresh } = useCachedSecurityIssues(clusterConfig, namespaceConfig)
 
   // Use demo data when in demo mode, otherwise use cached/agent data
   const rawIssues = useMemo(() => isDemoMode ? getDemoSecurityIssues() : cachedIssues, [isDemoMode, cachedIssues])
@@ -116,6 +116,7 @@ function SecurityIssuesInternal({ config }: SecurityIssuesProps) {
   const { drillToPod } = useDrillDownActions()
 
   // Report card data state to parent CardWrapper for automatic skeleton/refresh handling
+  // lastRefresh → lastUpdated: passed to useCardLoadingState to show "Updated Xm ago" in card header
   const hasData = rawIssues.length > 0
   const { showSkeleton, showEmptyState } = useCardLoadingState({
     isLoading: isLoading && !hasData,
@@ -124,6 +125,7 @@ function SecurityIssuesInternal({ config }: SecurityIssuesProps) {
     hasAnyData: hasData,
     isFailed,
     consecutiveFailures,
+    lastRefresh: isDemoMode ? null : lastRefresh,
   })
 
   const severityOrder: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3, info: 4 }

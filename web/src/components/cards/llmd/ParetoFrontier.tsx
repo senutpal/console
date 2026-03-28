@@ -254,10 +254,12 @@ function ParetoFrontierInternal({ config }: ParetoFrontierProps) {
   const chartRef = useRef<ReactECharts>(null)
 
   // ---- Data ----
-  const { data: reports, isDemoFallback, isFailed, consecutiveFailures, isLoading, isRefreshing } = useCachedBenchmarkReports()
+  const { data: reports, isDemoFallback, isFailed, consecutiveFailures, isLoading, isRefreshing, lastRefresh } = useCachedBenchmarkReports()
   // Use hook data directly — it already returns cached live data or demo fallback.
   // Calling generateBenchmarkReports() here would bypass the warm cache (#3397).
   const effectiveReports = useMemo(() => reports ?? [], [reports])
+  // Freshness tracking: lastRefresh → lastUpdated Date reported to CardWrapper via useReportCardDataState
+  const lastUpdated = lastRefresh ? new Date(lastRefresh) : null
   useReportCardDataState({
     isDemoData: isDemoFallback,
     isFailed,
@@ -265,6 +267,7 @@ function ParetoFrontierInternal({ config }: ParetoFrontierProps) {
     isLoading,
     isRefreshing,
     hasData: effectiveReports.length > 0,
+    lastUpdated,
   })
 
   // ---- All Pareto points ----
