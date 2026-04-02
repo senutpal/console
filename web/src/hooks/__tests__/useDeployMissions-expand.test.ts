@@ -47,8 +47,8 @@ vi.mock('../../lib/constants', async (importOriginal) => {
     ...actual,
     LOCAL_AGENT_HTTP_URL: 'http://localhost:8585',
     STORAGE_KEY_TOKEN: 'kc-auth-token',
-    STORAGE_KEY_MISSIONS_ACTIVE: OLD_ACTIVE_KEY,
-    STORAGE_KEY_MISSIONS_HISTORY: OLD_HISTORY_KEY,
+    STORAGE_KEY_MISSIONS_ACTIVE: 'kc-missions-active',
+    STORAGE_KEY_MISSIONS_HISTORY: 'kc-missions-history',
   }
 })
 

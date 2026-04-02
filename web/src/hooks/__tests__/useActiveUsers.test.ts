@@ -23,9 +23,6 @@ describe('useActiveUsers', () => {
     sessionStorage.clear()
     vi.clearAllMocks()
     mockDemoMode = true
-    mockDemoModeRef.value = true
-    mockIsDemoModeForced = true
-    mockIsDemoModeForcedRef.value = true
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(
       new Response(JSON.stringify({ activeUsers: 5, totalConnections: 8 }), {
         status: 200,
