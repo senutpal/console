@@ -81,7 +81,7 @@ export function HelmReleaseStatus({ config }: HelmReleaseStatusProps) {
         appVersion: r.app_version || '',
         status: (r.status?.toLowerCase() ?? 'unknown') as 'deployed' | 'failed' | 'pending' | 'superseded' | 'uninstalling',
         updated: r.updated,
-        revision: parseInt(r.revision) || 1,
+        revision: parseInt(String(r.revision ?? '1'), 10) || 1,
         cluster: r.cluster }
     })
 

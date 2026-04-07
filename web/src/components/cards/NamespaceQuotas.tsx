@@ -742,7 +742,7 @@ export function NamespaceQuotas({ config }: NamespaceQuotasProps) {
                               <Pencil className="w-3 h-3" />
                             </button>
                             <button
-                              onClick={() => setDeleteConfirm({ cluster: fullQuota.cluster!, namespace: fullQuota.namespace, name: fullQuota.name })}
+                              onClick={() => setDeleteConfirm({ cluster: fullQuota.cluster ?? '', namespace: fullQuota.namespace, name: fullQuota.name })}
                               className="p-1 hover:bg-secondary rounded text-muted-foreground hover:text-red-400"
                               title="Delete quota"
                             >
