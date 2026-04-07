@@ -31,6 +31,9 @@ export function useStableEffect(
   const prevFP = useRef<string>('')
   const cleanupRef = useRef<(() => void) | void>(undefined)
 
+  // Run on every render but only fire the effect when fingerprint changes.
+  // No cleanup return — cleanup is managed via ref to avoid React calling
+  // it on every re-render (which would sever timers/subscriptions).
   useEffect(() => {
     const fp = fingerprint(deps)
     if (fp === prevFP.current) return
@@ -42,13 +45,16 @@ export function useStableEffect(
     }
 
     cleanupRef.current = effect()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  })
 
+  // Run cleanup on unmount only
+  useEffect(() => {
     return () => {
       if (typeof cleanupRef.current === 'function') {
         cleanupRef.current()
         cleanupRef.current = undefined
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  })
+  }, [])
 }
