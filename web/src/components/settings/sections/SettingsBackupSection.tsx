@@ -12,20 +12,26 @@ interface SettingsBackupSectionProps {
   onImport: (file: File) => Promise<void>
 }
 
-const STATUS_CONFIG: Record<SyncStatus, { icon: typeof Check; label: string; className: string }> = {
-  idle: { icon: HardDrive, label: 'Initializing...', className: 'text-muted-foreground' },
-  saving: { icon: Loader2, label: 'Saving...', className: 'text-blue-400' },
-  saved: { icon: Check, label: 'Saved', className: 'text-green-400' },
-  error: { icon: AlertCircle, label: 'Save failed', className: 'text-red-400' },
-  offline: { icon: WifiOff, label: 'Backend offline', className: 'text-yellow-400' },
+const STATUS_ICONS: Record<SyncStatus, { icon: typeof Check; className: string }> = {
+  idle: { icon: HardDrive, className: 'text-muted-foreground' },
+  saving: { icon: Loader2, className: 'text-blue-400' },
+  saved: { icon: Check, className: 'text-green-400' },
+  error: { icon: AlertCircle, className: 'text-red-400' },
+  offline: { icon: WifiOff, className: 'text-yellow-400' },
 }
 
-function formatLastSaved(date: Date | null): string {
-  if (!date) return 'Never'
+// Pre-resolved labels passed in from the caller so this helper does not
+// need to depend on i18next's overloaded TFunction generic.
+interface LastSavedLabels {
+  never: string
+  justNow: string
+}
+function formatLastSaved(date: Date | null, labels: LastSavedLabels): string {
+  if (!date) return labels.never
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
   const diffSec = Math.floor(diffMs / 1000)
-  if (diffSec < 5) return 'Just now'
+  if (diffSec < 5) return labels.justNow
   if (diffSec < 60) return `${diffSec}s ago`
   const diffMin = Math.floor(diffSec / 60)
   if (diffMin < 60) return `${diffMin}m ago`
@@ -51,7 +57,15 @@ export function SettingsBackupSection({
     return () => clearTimeout(importSuccessTimerRef.current)
   }, [])
 
-  const status = STATUS_CONFIG[syncStatus]
+  const STATUS_LABELS: Record<SyncStatus, string> = {
+    idle: t('settings.backup.initializing'),
+    saving: t('settings.backup.saving'),
+    saved: t('settings.backup.saved'),
+    error: t('settings.backup.saveFailed'),
+    offline: t('settings.backup.backendOffline'),
+  }
+  const status = STATUS_ICONS[syncStatus]
+  const statusLabel = STATUS_LABELS[syncStatus]
   const StatusIcon = status.icon
 
   const handleExport = async () => {
@@ -108,9 +122,14 @@ export function SettingsBackupSection({
             <div className="flex items-center gap-3">
               <StatusIcon className={`w-4 h-4 ${status.className} ${syncStatus === 'saving' ? 'animate-spin' : ''}`} />
               <div>
-                <p className={`text-sm font-medium ${status.className}`}>{status.label}</p>
+                <p className={`text-sm font-medium ${status.className}`}>{statusLabel}</p>
                 <p className="text-xs text-muted-foreground">
-                  Last saved: {formatLastSaved(lastSaved)}
+                  {t('settings.backup.lastSaved', {
+                    time: formatLastSaved(lastSaved, {
+                      never: t('settings.backup.never'),
+                      justNow: t('settings.backup.justNow'),
+                    }),
+                  })}
                 </p>
               </div>
             </div>
