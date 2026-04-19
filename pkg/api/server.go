@@ -415,7 +415,11 @@ func (s *Server) setupMiddleware() {
 	// Security headers (#7037 CSP, #7038 HSTS)
 	s.app.Use(func(c *fiber.Ctx) error {
 		c.Set("X-Content-Type-Options", "nosniff")
-		c.Set("X-Frame-Options", "DENY")
+		// Skip X-Frame-Options: DENY for /embed/* routes to allow iframe embedding
+		// These routes display public CI/CD data and are designed for embedding
+		if !strings.HasPrefix(c.Path(), "/embed/") {
+			c.Set("X-Frame-Options", "DENY")
+		}
 		c.Set("X-XSS-Protection", "0") // Disabled per OWASP — modern browsers don't need it and it can introduce vulnerabilities
 		c.Set("Referrer-Policy", "strict-origin-when-cross-origin")
 		c.Set("Permissions-Policy", "camera=(), microphone=(), geolocation=()")

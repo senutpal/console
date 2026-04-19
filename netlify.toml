@@ -176,6 +176,17 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# Embed routes allow iframe embedding for CI/CD pipeline cards.
+# Overrides global X-Frame-Options: DENY and CSP frame-ancestors 'none' to enable framing.
+# These routes display public GitHub Actions data and are designed for embedding.
+[[headers]]
+  for = "/embed/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-eval' https://www.googletagmanager.com https://analytics.kubestellar.io; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://github.com https://avatars.githubusercontent.com https://raw.githubusercontent.com https://api.dicebear.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://analytics.google.com https://fonts.googleapis.com https://www.googleapis.com https://www.googletagmanager.com https://api.github.com https://api.dicebear.com https://fonts.gstatic.com https://analytics.kubestellar.io https://raw.githubusercontent.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'; frame-src 'self'; worker-src 'self' blob:; manifest-src 'self'"
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+
 # HTML files must always revalidate to pick up new chunk references after deploys
 [[headers]]
   for = "/*.html"
