@@ -138,6 +138,12 @@ export * from './useCachedISO27001'
 export * from './useCachedCiliumStatus'
 
 // ============================================================================
+// Jaeger Tracing — useCachedJaegerStatus.ts
+// ============================================================================
+
+export * from './useCachedJaegerStatus'
+
+// ============================================================================
 // Standalone fetchers for prefetch (no React hooks, plain async)
 // ============================================================================
 

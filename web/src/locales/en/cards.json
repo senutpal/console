@@ -369,6 +369,7 @@
     "pipeline_flow": "Live Runs",
     "recent_failures": "Recent Failures",
     "thanos_status": "Thanos",
+    "jaeger_status": "Jaeger Tracing",
     "harbor_status": "Harbor Registry"
   },
   "descriptions": {
@@ -557,6 +558,26 @@
     "pipeline_flow": "Drasi-style flow visualization of in-flight GitHub Actions runs: trigger, workflow, jobs, steps.",
     "recent_failures": "The last failed GitHub Actions runs with log drill-down and optional re-run.",
     "thanos_status": "Thanos global view metrics, store gateway status, and query health.",
+    "jaeger_status": "Distributed trace collection, service dependencies, and latency analysis."
+  },
+  "jaeger": {
+    "title": "Jaeger Tracing",
+    "services": "Services",
+    "dependencies": "Dependencies",
+    "tracesLastHour": "Traces (last hour)",
+    "latencyAnalysis": "Latency Analysis",
+    "avg": "Avg",
+    "p95": "P95",
+    "p99": "P99",
+    "dropped": "Dropped",
+    "queueDepth": "Queue Depth",
+    "collectors": "Collectors",
+    "name": "Name",
+    "status": "Status",
+    "traces": "Traces",
+    "notDetected": "Jaeger Not Detected",
+    "notDetectedDesc": "Distributed tracing is not yet configured or Jaeger was not found in your cluster.",
+    "viewDocs": "View Setup Guide",
     "harbor_status": "Harbor registry projects, repositories, and vulnerability scan results."
   },
   "categories": {

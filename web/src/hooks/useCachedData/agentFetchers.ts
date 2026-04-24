@@ -198,3 +198,35 @@ export async function fetchCiliumStatus(): Promise<CiliumStatus | null> {
     return null
   }
 }
+// ============================================================================
+// Jaeger status fetcher
+// ============================================================================
+
+/**
+ * Fetch aggregated Jaeger tracing status from the local agent.
+ * Matches backend handler at /jaeger-status.
+ */
+export async function fetchJaegerStatus(): Promise<any | null> {
+  // Rule: Check if agent is available before attempting fetch
+  if (isAgentUnavailable()) return null
+
+  // Rule: Authorization via bearer token
+  const token = localStorage.getItem(STORAGE_KEY_TOKEN)
+  if (!token || token === 'demo-token') return null
+
+  try {
+    const res = await fetch(`${LOCAL_AGENT_HTTP_URL}/jaeger-status`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+      signal: AbortSignal.timeout(FETCH_DEFAULT_TIMEOUT_MS),
+    })
+
+    if (!res.ok) return null
+    return await res.json().catch(() => null)
+  } catch {
+    // Suppress console noise on expected fetch timeouts
+    return null
+  }
+}

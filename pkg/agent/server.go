@@ -22,25 +22,25 @@ import (
 )
 
 const (
-	agentDefaultTimeout   = 30 * time.Second
-	agentExtendedTimeout  = 60 * time.Second
-	agentCommandTimeout   = 45 * time.Second
-	healthCheckTimeout    = 2 * time.Second
-	registryTimeout       = 10 * time.Second
-	consoleHealthTimeout  = 5 * time.Second
-	wsPingInterval        = 30 * time.Second // how often to send WebSocket pings
-	wsPongTimeout         = 60 * time.Second // how long to wait for a pong before declaring dead
-	wsWriteTimeout        = 10 * time.Second // deadline for a single write (prevents blocking on dead conn)
-	stabilizationDelay    = 3 * time.Second
-	startupDelay          = 500 * time.Millisecond
-	metricsHistoryTick    = 10 * time.Minute
-	agentFileMode = 0600
+	agentDefaultTimeout  = 30 * time.Second
+	agentExtendedTimeout = 60 * time.Second
+	agentCommandTimeout  = 45 * time.Second
+	healthCheckTimeout   = 2 * time.Second
+	registryTimeout      = 10 * time.Second
+	consoleHealthTimeout = 5 * time.Second
+	wsPingInterval       = 30 * time.Second // how often to send WebSocket pings
+	wsPongTimeout        = 60 * time.Second // how long to wait for a pong before declaring dead
+	wsWriteTimeout       = 10 * time.Second // deadline for a single write (prevents blocking on dead conn)
+	stabilizationDelay   = 3 * time.Second
+	startupDelay         = 500 * time.Millisecond
+	metricsHistoryTick   = 10 * time.Minute
+	agentFileMode        = 0600
 
 	// Backend port resolution constants (see resolveBackendPort in server_http.go).
 	// These are duplicated from cmd/watcher/watcher.go because pkg/agent cannot
 	// import the main package. Keep them in sync with watcher.go.
-	backendPortWatchdogMode  = 8081               // watchdog (8080) proxies -> backend (8081)
-	backendPortLegacyDefault = 8080               // no-watchdog deployments: backend binds 8080 directly
+	backendPortWatchdogMode  = 8081 // watchdog (8080) proxies -> backend (8081)
+	backendPortLegacyDefault = 8080 // no-watchdog deployments: backend binds 8080 directly
 	watchdogPidFilePath      = "/tmp/.kc-watchdog.pid"
 	backendHealthScheme      = "http"
 	backendHealthHost        = "127.0.0.1"
@@ -483,6 +483,9 @@ func (s *Server) Start() error {
 
 	// Cilium status — aggregated eBPF networking health across all clusters (#9400)
 	mux.HandleFunc("/cilium-status", s.handleCiliumStatus)
+
+	// Jaeger status — distributed tracing health and metrics (#10243)
+	mux.HandleFunc("/jaeger-status", s.handleJaegerStatus)
 
 	// Helm mutating operations moved to kc-agent (#7993 Phase 3a). These shell
 	// `helm rollback` / `helm uninstall` / `helm upgrade` under the user's

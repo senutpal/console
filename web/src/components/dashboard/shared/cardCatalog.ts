@@ -154,6 +154,9 @@ export const CARD_CATALOG = {
     { type: 'network_trace', title: 'Network Traces', description: 'Live network connection tracing via Inspektor Gadget eBPF', visualization: 'table' },
     { type: 'dns_trace', title: 'DNS Traces', description: 'Live DNS query tracing via Inspektor Gadget eBPF', visualization: 'table' },
   ],
+  'Observability': [
+    { type: 'jaeger_status', title: 'Jaeger Tracing', description: 'Distributed trace collection, service dependencies, and latency analysis', visualization: 'status' },
+  ],
   'GitOps': [
     { type: 'helm_release_status', title: 'Helm Releases', description: 'Helm release status and versions', visualization: 'status' },
     { type: 'helm_history', title: 'Helm History', description: 'Release revision history', visualization: 'events' },
@@ -654,6 +657,13 @@ export function generateCardSuggestions(query: string): CardSuggestion[] {
       { type: 'pod_health_trend', title: 'Pod Health Trend', description: 'Healthy/unhealthy/pending pods over time', visualization: 'timeseries', config: {} },
       { type: 'resource_trend', title: 'Resource Trend', description: 'CPU, memory, pods, nodes over time', visualization: 'timeseries', config: {} },
       { type: 'gpu_utilization', title: 'GPU Utilization', description: 'GPU allocation trend with utilization chart', visualization: 'timeseries', config: {} },
+    ]
+  }
+
+  if (lowerQuery.includes('jaeger') || lowerQuery.includes('tracing') || lowerQuery.includes('latency') || lowerQuery.includes('trace') || lowerQuery.includes('span')) {
+    return [
+      { type: 'jaeger_status', title: 'Jaeger Tracing', description: 'Distributed trace collection, service dependencies, and latency analysis', visualization: 'status', config: {} },
+      { type: 'network_trace', title: 'Network Traces', description: 'Live network connection tracing via Inspektor Gadget eBPF', visualization: 'table', config: {} },
     ]
   }
 

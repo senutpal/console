@@ -499,3 +499,34 @@ export const getDemoCiliumStatus = (): CiliumStatus => ({
     },
   },
 })
+// ============================================================================
+// Jaeger demo data
+// ============================================================================
+
+export const getDemoJaegerStatus = (): any => ({
+  status: 'Healthy',
+  version: '1.57.0',
+  collectors: {
+    count: 4,
+    status: 'Healthy',
+    items: [
+      { name: 'jaeger-collector-1', status: 'Healthy', version: '1.57.0', cluster: 'cluster-1' },
+      { name: 'jaeger-collector-2', status: 'Healthy', version: '1.57.0', cluster: 'cluster-2' },
+      { name: 'jaeger-collector-3', status: 'Healthy', version: '1.57.0', cluster: 'cluster-3' },
+      { name: 'jaeger-collector-4', status: 'Healthy', version: '1.57.0', cluster: 'cluster-4' },
+    ],
+  },
+  query: {
+    status: 'Healthy',
+  },
+  metrics: {
+    servicesCount: 32,
+    tracesLastHour: 2450,
+    dependenciesCount: 128,
+    avgLatencyMs: 38,
+    p95LatencyMs: 142,
+    p99LatencyMs: 385,
+    spansDroppedLastHour: 15, // Realistic small number of dropped spans
+    avgQueueLength: 42,
+  },
+})
