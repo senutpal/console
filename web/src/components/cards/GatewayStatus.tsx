@@ -1,9 +1,10 @@
 import { useMemo } from 'react'
-import { CheckCircle2, Clock, XCircle, AlertCircle, ExternalLink, Globe, ArrowRight, Server } from 'lucide-react'
+import { AlertCircle, ExternalLink, Globe, ArrowRight, Server } from 'lucide-react'
 import { ClusterBadge } from '../ui/ClusterBadge'
 import { Skeleton } from '../ui/Skeleton'
 import { CardSearchInput, CardControlsRow, CardPaginationFooter, CardAIActions } from '../../lib/cards/CardComponents'
 import { useCardData, commonComparators } from '../../lib/cards/cardHooks'
+import { gatewayStatusIcons, gatewayStatusColors } from '../../lib/cards/statusMappers'
 import { K8S_DOCS } from '../../config/externalApis'
 import { useCardLoadingState } from './CardDataContext'
 import { useTranslation } from 'react-i18next'
@@ -13,35 +14,8 @@ import type { Gateway } from '../../hooks/useGatewayStatus'
 // Gateway status types
 type GatewayStatusType = 'Programmed' | 'Accepted' | 'Pending' | 'NotAccepted' | 'Unknown'
 
-const getStatusIcon = (status: GatewayStatusType) => {
-  switch (status) {
-    case 'Programmed':
-      return CheckCircle2
-    case 'Accepted':
-      return CheckCircle2
-    case 'Pending':
-      return Clock
-    case 'NotAccepted':
-      return XCircle
-    default:
-      return Clock
-  }
-}
-
-const getStatusColors = (status: GatewayStatusType) => {
-  switch (status) {
-    case 'Programmed':
-      return { bg: 'bg-green-500/20', text: 'text-green-400', border: 'border-green-500/20' }
-    case 'Accepted':
-      return { bg: 'bg-blue-500/20', text: 'text-blue-400', border: 'border-blue-500/20' }
-    case 'Pending':
-      return { bg: 'bg-yellow-500/20', text: 'text-yellow-400', border: 'border-yellow-500/20' }
-    case 'NotAccepted':
-      return { bg: 'bg-red-500/20', text: 'text-red-400', border: 'border-red-500/20' }
-    default:
-      return { bg: 'bg-gray-500/20', text: 'text-muted-foreground', border: 'border-gray-500/20' }
-  }
-}
+const getStatusIcon = (status: GatewayStatusType) => gatewayStatusIcons[status]
+const getStatusColors = (status: GatewayStatusType) => gatewayStatusColors[status]
 
 type SortByOption = 'name' | 'cluster' | 'status'
 type SortTranslationKey = 'common:common.name' | 'common:common.cluster' | 'common:common.status'
