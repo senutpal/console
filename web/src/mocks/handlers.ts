@@ -2042,6 +2042,9 @@ export const handlers = [
   // clean for demo visitors and avoids the MSW "unhandled request"
   // warning. Source callers already branch on `available` so semantics
   // are unchanged. See web/src/lib/kagentBackend.ts and related files.
+  http.get('/api/agent/token', () => {
+    return HttpResponse.json({ token: '' })
+  }),
   http.get('/api/kagent/status', () => {
     return HttpResponse.json({ available: false, reason: 'not configured in demo mode' })
   }),

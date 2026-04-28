@@ -53,8 +53,14 @@ let agentTokenPromise: Promise<string> | null = null
 /**
  * Lazily fetch the kc-agent token from the backend. The token is cached
  * in localStorage so subsequent calls (and page reloads) don't re-fetch.
+ *
+ * On Netlify / demo mode there is no kc-agent backend, so we skip the
+ * fetch entirely to avoid 404 → HTML parse errors that pollute GA4
+ * (#10643, root cause of the 48-hour blank dashboard in #10398).
  */
 function getAgentToken(): Promise<string> {
+  if (isDemoMode() || isNetlifyDeployment) return Promise.resolve('')
+
   const cached = localStorage.getItem(AGENT_TOKEN_STORAGE_KEY)
   if (cached) return Promise.resolve(cached)
 
