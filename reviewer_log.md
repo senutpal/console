@@ -1,3 +1,29 @@
+## Pass 48 — 2026-04-28 20:34 UTC (nightlyPlaywright: Sidebar collapse state sync race)
+
+### nightlyPlaywright=RED — Sidebar Collapse Tests Failing on all Browsers
+
+**Trigger**: Run #25075062066 (auth race fix) completed with FAILURE — all 4 browsers (Firefox, webkit, mobile-chrome, mobile-safari) still failing.
+
+**Root Cause Identified**: Sidebar collapse tests race the React state update. After clicking the collapse toggle, tests immediately check if Add Card button is hidden. But the `aria-expanded` attribute hasn't updated yet — React state change is in-flight. Tests find the button still visible (DOM hasn't re-rendered yet).
+
+**Root Cause**: Test clicks collapse button but doesn't wait for the state change to complete. The `aria-expanded` attribute on the toggle button reflects the actual sidebar state — by checking it first, we ensure React updated.
+
+**Fix Applied**:
+- Added `await expect(collapseToggle).toHaveAttribute('aria-expanded', 'false', { timeout: 5000 })` checks AFTER clicking the toggle and BEFORE asserting Add Card visibility
+- Applied to 4 tests: `sidebar can be collapsed via toggle button`, `sidebar can be expanded after collapse`, `collapsed sidebar hides Add Card button`, `collapse button is keyboard accessible`, `sidebar state persists on navigation`
+
+**Actions**:
+- Commit `fada1c1cc`: Fixed 5 Sidebar tests with aria-expanded state sync guards
+- Pushed to main
+- Triggered new nightly Playwright run #25076441243
+
+**Pending**: 
+- Run #25076441243 in progress (started 20:34Z)
+- Nightly unit-test run #25071767006 still in_progress (2h39m elapsed, OOM worker crash intermittently)
+- PR #10760 CI pending (App Visual Regression fix)
+
+---
+
 ## Pass 47 — 2026-04-28 UTC (nightlyPlaywright: Firefox/mobile auth race + breakpoint mismatch)
 
 ### nightlyPlaywright=RED — Systemic Firefox/Mobile E2E Fix
