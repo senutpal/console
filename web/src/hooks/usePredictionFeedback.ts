@@ -20,8 +20,10 @@ if (typeof window !== 'undefined') {
   const stored = localStorage.getItem(STORAGE_KEY)
   if (stored) {
     try {
-      const parsed: StoredFeedback[] = JSON.parse(stored)
-      feedbackMap = new Map(parsed.map(f => [f.predictionId, f]))
+      const parsed = JSON.parse(stored)
+      if (Array.isArray(parsed)) {
+        feedbackMap = new Map(parsed.map((f: StoredFeedback) => [f.predictionId, f]))
+      }
     } catch {
       // Invalid JSON, use empty map
     }
@@ -73,9 +75,11 @@ export function usePredictionFeedback() {
       const stored = localStorage.getItem(STORAGE_KEY)
       if (stored) {
         try {
-          const parsed: StoredFeedback[] = JSON.parse(stored)
-          feedbackMap = new Map(parsed.map(f => [f.predictionId, f]))
-          notifySubscribers()
+          const parsed = JSON.parse(stored)
+          if (Array.isArray(parsed)) {
+            feedbackMap = new Map(parsed.map((f: StoredFeedback) => [f.predictionId, f]))
+            notifySubscribers()
+          }
         } catch {
           // Invalid JSON, ignore
         }

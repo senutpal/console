@@ -35,7 +35,7 @@ export function useClusterContext(): {
   const isLoading = clustersLoading || operatorsLoading || helmLoading || podLoading || securityLoading
 
   const clusterContext = useMemo(() => {
-    const healthyClusters = deduplicatedClusters.filter(c => c.healthy)
+    const healthyClusters = (deduplicatedClusters || []).filter(c => c.healthy)
     if (healthyClusters.length === 0) return null
 
     // Pick primary cluster (current context or first healthy)

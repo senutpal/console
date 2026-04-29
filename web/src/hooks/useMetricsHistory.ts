@@ -42,10 +42,13 @@ if (typeof window !== 'undefined') {
   const stored = localStorage.getItem(STORAGE_KEY)
   if (stored) {
     try {
-      snapshots = JSON.parse(stored)
-      // Remove snapshots older than 7 days
-      const cutoff = Date.now() - CACHE_TTL_MS
-      snapshots = snapshots.filter(s => new Date(s.timestamp).getTime() > cutoff)
+      const parsed = JSON.parse(stored)
+      if (Array.isArray(parsed)) {
+        snapshots = parsed
+        // Remove snapshots older than 7 days
+        const cutoff = Date.now() - CACHE_TTL_MS
+        snapshots = snapshots.filter(s => new Date(s.timestamp).getTime() > cutoff)
+      }
     } catch {
       // Invalid JSON, use empty array
     }

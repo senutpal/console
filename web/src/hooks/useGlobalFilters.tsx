@@ -156,7 +156,8 @@ export function GlobalFiltersProvider({ children }: { children: ReactNode }) {
       if (stored) {
         const parsed = JSON.parse(stored)
         // null means all clusters
-        return parsed === null ? [] : parsed
+        if (parsed === null) return []
+        if (Array.isArray(parsed)) return parsed
       }
     } catch {
       // Ignore parse errors
@@ -170,7 +171,8 @@ export function GlobalFiltersProvider({ children }: { children: ReactNode }) {
       const stored = localStorage.getItem(SEVERITY_STORAGE_KEY)
       if (stored) {
         const parsed = JSON.parse(stored)
-        return parsed === null ? [] : parsed
+        if (parsed === null) return []
+        if (Array.isArray(parsed)) return parsed
       }
     } catch {
       // Ignore parse errors
@@ -184,7 +186,10 @@ export function GlobalFiltersProvider({ children }: { children: ReactNode }) {
     try {
       const stored = localStorage.getItem(GROUPS_STORAGE_KEY)
       if (stored) {
-        groups = JSON.parse(stored)
+        const parsed = JSON.parse(stored)
+        if (Array.isArray(parsed)) {
+          groups = parsed
+        }
       }
     } catch {
       // Ignore parse errors
