@@ -359,8 +359,12 @@ export function useStackDiscovery(clusters: string[]) {
 
   // Stable key for cluster list — avoids complex expressions in dependency arrays
   const clustersKey = (clusters || []).join(',')
+  // Ref so refetch can read the latest clusters without making refetch unstable
+  const clustersRef = useRef(clusters)
+  clustersRef.current = clusters
 
   const refetch = useCallback(async (silent = false) => {
+    const clusters = clustersRef.current
     // Skip fetching in demo mode — no agent available
     if (getDemoMode()) {
       setIsLoading(false)
@@ -700,11 +704,11 @@ export function useStackDiscovery(clusters: string[]) {
       setIsLoading(false)
       isRefetching.current = false
     }
-  }, [clusters, clustersKey])
+  }, [clustersKey])
 
   useEffect(() => {
     // Wait for clusters to be available
-    if (clusters.length === 0) {
+    if (clustersRef.current.length === 0) {
       return
     }
     // If we have any cached stacks (even stale), do a silent background refresh
@@ -713,7 +717,7 @@ export function useStackDiscovery(clusters: string[]) {
     const interval = setInterval(() => refetch(true), REFRESH_INTERVAL_MS)
     return () => clearInterval(interval)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refetch, clusters.length])
+  }, [refetch])
 
   return {
     stacks,

@@ -152,7 +152,7 @@ export function useCrossplaneManagedResources(cluster?: string) {
     }
   }, [])
 
-  const notifyListeners = (isRefreshing: boolean, isLoading = false, isDemoData = false) => {
+  const notifyListenersRef = useRef((isRefreshing: boolean, isLoading = false, isDemoData = false) => {
       const state: ManagedCacheState = {
         resources: managedCache.data,
         isLoading,
@@ -166,7 +166,8 @@ export function useCrossplaneManagedResources(cluster?: string) {
         isDemoData }
 
       managedCache.listeners.forEach(l => l(state))
-    }
+    })
+  const notifyListeners = notifyListenersRef.current
 
   const refetch = useCallback(
     async (silent = false) => {
@@ -253,7 +254,7 @@ export function useCrossplaneManagedResources(cluster?: string) {
         if (!cluster) notifyListeners(false)
       }
     },
-    [cluster, notifyListeners]
+    [cluster]
   )
 
   useEffect(() => {

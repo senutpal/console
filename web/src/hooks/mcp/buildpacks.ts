@@ -126,7 +126,7 @@ export function useBuildpackImages(cluster?: string) {
     }
   }, [])
 
-  const notifyListeners = (isRefreshing: boolean, isLoading = false, isDemoData = false) => {
+  const notifyListenersRef = useRef((isRefreshing: boolean, isLoading = false, isDemoData = false) => {
       const state: BuildpackCacheState = {
         images: buildpackCache.data,
         isLoading,
@@ -137,7 +137,8 @@ export function useBuildpackImages(cluster?: string) {
           buildpackCache.timestamp > 0 ? buildpackCache.timestamp : null,
         isDemoData }
       buildpackCache.listeners.forEach(l => l(state))
-    }
+    })
+  const notifyListeners = notifyListenersRef.current
 
   const refetch = useCallback(
     async (silent = false) => {
@@ -248,7 +249,7 @@ export function useBuildpackImages(cluster?: string) {
         if (!cluster) notifyListeners(false)
       }
     },
-    [cluster, notifyListeners]
+    [cluster]
   )
 
   useEffect(() => {
