@@ -723,7 +723,26 @@ func (m *MultiClusterClient) DeployWorkload(ctx context.Context, sourceCluster, 
 			depResults := applyDependencies(clusterCtx, targetClient, bundle.Dependencies)
 			mu.Lock()
 			allDepResults = append(allDepResults, depResults...)
+			
+			// Check if any dependency failed to deploy
+			hasFailedDep := false
+			for _, dr := range depResults {
+				if dr.Action == "failed" {
+					failed = append(failed, targetCluster)
+					if dr.Error != "" {
+						errs = append(errs, fmt.Errorf("cluster %s: dependency %s/%s failed: %s", targetCluster, dr.Kind, dr.Name, dr.Error))
+					} else {
+						errs = append(errs, fmt.Errorf("cluster %s: dependency %s/%s failed", targetCluster, dr.Kind, dr.Name))
+					}
+					hasFailedDep = true
+					break // Record one failure reason per cluster to avoid spam
+				}
+			}
 			mu.Unlock()
+			
+			if hasFailedDep {
+				return // Abort workload deployment for this cluster if deps failed
+			}
 
 			// 4c. Apply the workload itself
 			objCopy := cleanedObj.DeepCopy()
@@ -888,6 +907,7 @@ func applyDependencies(
 			_, err = resource.Update(ctx, objCopy, metav1.UpdateOptions{})
 			if err != nil {
 				result.Action = "failed"
+				result.Error = err.Error()
 				slog.Error("[deploy] failed to update dependency", "kind", dep.Kind, "name", dep.Name, "error", err)
 			} else {
 				result.Action = "updated"
@@ -898,6 +918,7 @@ func applyDependencies(
 			_, err = resource.Create(ctx, objCopy, metav1.CreateOptions{})
 			if err != nil {
 				result.Action = "failed"
+				result.Error = err.Error()
 				slog.Error("[deploy] failed to create dependency", "kind", dep.Kind, "name", dep.Name, "error", err)
 			} else {
 				result.Action = "created"
@@ -906,6 +927,7 @@ func applyDependencies(
 		} else {
 			// Real error (network, RBAC, etc.) — do not assume resource is missing
 			result.Action = "failed"
+			result.Error = err.Error()
 			slog.Error("[deploy] failed to check dependency", "kind", dep.Kind, "name", dep.Name, "error", err)
 		}
 
