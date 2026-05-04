@@ -53,7 +53,9 @@ export function loadNotifiedAlertKeys(): Map<string, number> {
   try {
     const stored = safeGet(STORAGE_KEY_NOTIFIED_ALERT_KEYS)
     if (stored) {
-      const entries = JSON.parse(stored) as [string, number][]
+      const parsed: unknown = JSON.parse(stored)
+      if (!Array.isArray(parsed)) return new Map()
+      const entries = parsed as [string, number][]
       const now = Date.now()
       let fresh = entries.filter(([, ts]) => now - ts <= NOTIFICATION_DEDUP_MAX_AGE_MS)
       // Enforce hard cap: keep only the most recent MAX_DEDUP_KEYS entries

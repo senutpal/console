@@ -174,6 +174,18 @@ describe('loadNotifiedAlertKeys', () => {
     const result = loadNotifiedAlertKeys()
     expect(result.size).toBe(0)
   })
+
+  it('returns empty Map when stored value is not an array', () => {
+    mockSafeGet.mockReturnValue(JSON.stringify({ corrupted: true }))
+    const result = loadNotifiedAlertKeys()
+    expect(result.size).toBe(0)
+  })
+
+  it('returns empty Map when stored value is a json string', () => {
+    mockSafeGet.mockReturnValue(JSON.stringify('a-string'))
+    const result = loadNotifiedAlertKeys()
+    expect(result.size).toBe(0)
+  })
 })
 
 // =============================================================================
