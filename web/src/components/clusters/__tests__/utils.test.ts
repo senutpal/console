@@ -10,6 +10,7 @@ vi.mock('../../../lib/utils/localStorage', () => ({
   safeSetItem: vi.fn(),
 }))
 
+import { safeGetItem } from '../../../lib/utils/localStorage'
 import {
   isClusterUnreachable,
   isClusterHealthy,
@@ -252,6 +253,24 @@ describe('loadClusterCards', () => {
     const cards = loadClusterCards()
     expect(Array.isArray(cards)).toBe(true)
     expect(cards.length).toBe(0)
+  })
+
+  it('returns parsed array when stored data is a valid array', () => {
+    vi.mocked(safeGetItem).mockReturnValueOnce(JSON.stringify([
+      { id: 'a', card_type: 'pod_issues', config: {} },
+    ]))
+    const cards = loadClusterCards()
+    expect(cards).toEqual([{ id: 'a', card_type: 'pod_issues', config: {} }])
+  })
+
+  it('returns empty array when stored value is not an array', () => {
+    vi.mocked(safeGetItem).mockReturnValueOnce(JSON.stringify({ corrupted: true }))
+    expect(loadClusterCards()).toEqual([])
+  })
+
+  it('returns empty array on corrupted json', () => {
+    vi.mocked(safeGetItem).mockReturnValueOnce('{not-json')
+    expect(loadClusterCards()).toEqual([])
   })
 })
 

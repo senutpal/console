@@ -148,7 +148,9 @@ const CLUSTERS_CARDS_KEY = 'kubestellar-clusters-cards'
 export function loadClusterCards(): ClusterCard[] {
   try {
     const stored = safeGetItem(CLUSTERS_CARDS_KEY)
-    return stored ? JSON.parse(stored) : []
+    if (!stored) return []
+    const parsed = JSON.parse(stored)
+    return Array.isArray(parsed) ? parsed : []
   } catch {
     return []
   }
