@@ -62,7 +62,8 @@ export const MATURITY_LEVELS = ['All', 'graduated', 'incubating', 'sandbox'] as 
 
 export function loadWatchedRepos(): string[] {
   try {
-    return JSON.parse(localStorage.getItem(WATCHED_REPOS_KEY) || '[]')
+    const parsed = JSON.parse(localStorage.getItem(WATCHED_REPOS_KEY) || '[]')
+    return Array.isArray(parsed) ? parsed : []
   } catch { return [] }
 }
 
@@ -72,7 +73,8 @@ export function saveWatchedRepos(repos: string[]) {
 
 export function loadWatchedPaths(): string[] {
   try {
-    return JSON.parse(localStorage.getItem(WATCHED_PATHS_KEY) || '[]')
+    const parsed = JSON.parse(localStorage.getItem(WATCHED_PATHS_KEY) || '[]')
+    return Array.isArray(parsed) ? parsed : []
   } catch { return [] }
 }
 
