@@ -2,7 +2,7 @@
 // chain with redirect interception (#4189).
 
 import { test, expect, type Route } from '@playwright/test'
-import { mockApiFallback, MOCK_DEMO_USER } from './helpers/setup'
+import { mockApiFallback, mockApiMe } from './helpers/setup'
 
 const ELEMENT_VISIBLE_TIMEOUT_MS = 10_000
 const NAV_INTERCEPT_TIMEOUT_MS = 5_000
@@ -33,16 +33,6 @@ async function mockHealthOAuthConfigured(page: import('@playwright/test').Page) 
   })
 }
 
-async function mockAuthenticatedUser(page: import('@playwright/test').Page) {
-  await page.route('**/api/me', (route) =>
-    route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify(MOCK_DEMO_USER),
-    })
-  )
-}
-
 test.describe('OAuth flow - frontend (mocked backend)', () => {
   test.use({ storageState: { cookies: [], origins: [] } })
 
@@ -50,7 +40,7 @@ test.describe('OAuth flow - frontend (mocked backend)', () => {
     testInfo.setTimeout(OAUTH_TEST_TIMEOUT_MS)
     await mockApiFallback(page)
     await mockHealthOAuthConfigured(page)
-    await mockAuthenticatedUser(page)
+    await mockApiMe(page)
   })
 
   test('clicking GitHub login navigates to /auth/github', async ({ page }) => {
@@ -140,6 +130,11 @@ test.describe('OAuth flow - frontend (mocked backend)', () => {
     // #6588: CSRF gate
     expect(refreshHeaders).not.toBeNull()
     expect(refreshHeaders!['x-requested-with']).toBe('XMLHttpRequest')
+
+    // The HttpOnly kc_auth cookie must reach /auth/refresh; if AuthCallback
+    // drops credentials: 'same-origin' the real flow breaks silently.
+    expect(refreshHeaders!['cookie']).toBeDefined()
+    expect(refreshHeaders!['cookie']).toContain('kc_auth=')
 
     // #4278: JWT must never appear in URL query; fragment must be stripped
     const finalUrl = page.url()
@@ -235,5 +230,38 @@ test.describe('OAuth flow - real backend', () => {
     const location = response.headers()['location']
     expect(location).toBeDefined()
     expect(location).toMatch(/\/login\?.*error=csrf_validation_failed/)
+    expect(location).not.toMatch(/[?&]token=/i)
+    expect(location).not.toMatch(/[?&]access_token=/i)
+    expect(location).not.toContain('#kc_x=')
+  })
+
+  // Drives the full callback contract on the real backend: get a valid state
+  // from /auth/github, then hit the callback so token exchange runs (and
+  // fails with a fake code). The resulting error redirect must land on
+  // /login?error=... with no credentials in the URL. Locks #4278 against
+  // any future change to oauthErrorRedirect's URL construction.
+  test('/auth/github/callback error redirect after token exchange leaks no credentials', async ({
+    page,
+  }) => {
+    const init = await page.request.get('/auth/github', { maxRedirects: 0 })
+    expect(init.status()).toBe(307)
+    const authorizeUrl = new URL(init.headers()['location']!)
+    const validState = authorizeUrl.searchParams.get('state')
+    expect(validState).toBeTruthy()
+
+    const callback = await page.request.get(
+      `/auth/github/callback?code=invalid_test_code&state=${validState}`,
+      { maxRedirects: 0 }
+    )
+    expect(callback.status()).toBe(307)
+
+    const location = callback.headers()['location']
+    expect(location).toBeDefined()
+    expect(location).toMatch(/\/login\?.*error=/)
+    expect(location).not.toMatch(/[?&]token=/i)
+    expect(location).not.toMatch(/[?&]access_token=/i)
+    expect(location).not.toContain('#kc_x=')
+
+    expect(callback.headers()['cache-control']).toContain('no-store')
   })
 })
