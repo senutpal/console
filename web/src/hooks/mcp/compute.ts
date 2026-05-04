@@ -46,7 +46,7 @@ function loadGPUCacheFromStorage(): GPUNodeCache {
     const stored = localStorage.getItem(GPU_CACHE_KEY)
     if (stored) {
       const parsed = JSON.parse(stored)
-      if (parsed.nodes && parsed.nodes.length > 0) {
+      if (Array.isArray(parsed.nodes) && parsed.nodes.length > 0) {
         return {
           nodes: parsed.nodes,
           lastUpdated: parsed.lastUpdated ? new Date(parsed.lastUpdated) : null,
