@@ -786,3 +786,8 @@ function getDemoNodes(): NodeInfo[] {
     },
   ]
 }
+
+export const __computeTestables = {
+  loadGPUCacheFromStorage,
+  GPU_CACHE_KEY,
+}

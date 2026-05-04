@@ -136,6 +136,11 @@ describe('loadSubscriptionsCacheFromStorage', () => {
     localStorage.setItem(SUBSCRIPTIONS_CACHE_KEY, 'broken')
     expect(loadSubscriptionsCacheFromStorage('subs:all')).toBeNull()
   })
+
+  it('returns null when data is not an array', () => {
+    localStorage.setItem(SUBSCRIPTIONS_CACHE_KEY, JSON.stringify({ data: 'corrupted', timestamp: 1000, key: 'subs:all' }))
+    expect(loadSubscriptionsCacheFromStorage('subs:all')).toBeNull()
+  })
 })
 
 // ── saveSubscriptionsCacheToStorage ──
