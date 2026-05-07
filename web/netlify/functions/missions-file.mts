@@ -42,6 +42,14 @@ interface CacheEntry {
   fetchedAt: number;
 }
 
+function hasInvalidPathInput(value: string): boolean {
+  return value.includes("..") || value.startsWith("/") || value.includes("#") || value.includes("?");
+}
+
+function hasInvalidRefInput(value: string): boolean {
+  return value.includes("..") || value.startsWith("/") || value.includes("#") || value.includes("?");
+}
+
 export default async (request: Request): Promise<Response> => {
   if (request.method === "OPTIONS") {
     return handlePreflight(request, CORS_OPTS);
@@ -54,7 +62,17 @@ export default async (request: Request): Promise<Response> => {
   if (!path) {
     return jsonResponse(corsHeaders, { error: "path query parameter is required" }, 400);
   }
+  // Reject path traversal patterns and URL control characters before they
+  // reach cache keys or the upstream URL (#12323). GitHub would refuse some
+  // of these requests anyway, but fragments / query delimiters could still
+  // create cache-key variants that do not match what gets fetched upstream.
+  if (hasInvalidPathInput(path)) {
+    return jsonResponse(corsHeaders, { error: "invalid path" }, 400);
+  }
   const ref = url.searchParams.get("ref") || DEFAULT_REF;
+  if (hasInvalidRefInput(ref)) {
+    return jsonResponse(corsHeaders, { error: "invalid ref" }, 400);
+  }
   const cacheKey = `file:${ref}:${path}`;
 
   try {
