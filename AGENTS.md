@@ -16,7 +16,7 @@ If a tool-specific file conflicts with `CLAUDE.md`, `CLAUDE.md` wins.
 
 - **Start the console:** `./startup-oauth.sh` (requires `.env` with GitHub OAuth) or `./start-dev.sh` (mock user, no OAuth).
 - **Ports:** backend `8080`, frontend `5174`, kc-agent WebSocket `8585`.
-- **Pre-PR gate:** `cd web && npm run build && npm run lint`.
+- **Pre-PR gate:** Do not run `npm run build` or `npm run lint` locally; CI validates both on the PR.
 - **Testing is mandatory** for UI and API work — see the "MANDATORY Testing Requirements" section in `CLAUDE.md`.
 
 ## Non-negotiable rules (excerpt — full list in `CLAUDE.md`)
@@ -31,4 +31,4 @@ If a tool-specific file conflicts with `CLAUDE.md`, `CLAUDE.md` wins.
 
 ## Reporting back
 
-When you finish a task, summarize what changed and confirm the pre-PR gate (`npm run build && npm run lint`) passed. Do not push or open PRs unless explicitly asked.
+When you finish a task, summarize what changed and note that build/lint are validated by CI on the PR. Do not push or open PRs unless explicitly asked.
