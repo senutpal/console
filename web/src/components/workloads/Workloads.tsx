@@ -8,6 +8,7 @@ import { useLocalAgent } from '../../hooks/useLocalAgent'
 import { isInClusterMode } from '../../hooks/useBackendHealth'
 import { useDemoMode } from '../../hooks/useDemoMode'
 import { useIsModeSwitching } from '../../lib/unified/demo'
+import { getClusterDisplayName } from '../../utils/clusterNames'
 import { StatusIndicator, type Status } from '../charts/StatusIndicator'
 import { ClusterBadge } from '../ui/ClusterBadge'
 import { Skeleton } from '../ui/Skeleton'
@@ -91,6 +92,8 @@ export function Workloads() {
 
   // Combined refresh
   const handleRefresh = () => {
+    // Guard against multiple concurrent refresh attempts
+    if (isRefreshing) return
     refetchPodIssues()
     refetchDeploymentIssues()
     refetchDeployments()
@@ -385,7 +388,7 @@ export function Workloads() {
                     <div>
                       <h3 className="font-semibold text-foreground">{isDeployment ? deploy.name : app.namespace}</h3>
                       <div className="flex items-center gap-2">
-                        <ClusterBadge cluster={item.cluster.split('/').pop() || item.cluster} size="sm" />
+                        <ClusterBadge cluster={getClusterDisplayName(item.cluster)} size="sm" />
                         {isDeployment && <span className="text-xs text-muted-foreground">{deploy.namespace}</span>}
                       </div>
                     </div>
@@ -485,7 +488,7 @@ export function Workloads() {
                       size="sm"
                     />
                     <span className="font-medium text-foreground text-sm truncate">
-                      {cluster.context || cluster.name.split('/').pop()}
+                      {cluster.context || getClusterDisplayName(cluster.name)}
                     </span>
                   </div>
                   <div className="text-xs text-muted-foreground">
