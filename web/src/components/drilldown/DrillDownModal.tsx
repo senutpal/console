@@ -29,6 +29,7 @@ const RBACDrillDown = safeLazy(() => import('./views/RBACDrillDown'), 'RBACDrill
 const CostDrillDown = safeLazy(() => import('./views/CostDrillDown'), 'CostDrillDown')
 const ComplianceDrillDown = safeLazy(() => import('./views/ComplianceDrillDown'), 'ComplianceDrillDown')
 const PVCDrillDown = safeLazy(() => import('./views/PVCDrillDown'), 'PVCDrillDown')
+const QuantumCredentialsDrillDown = safeLazy(() => import('./views/quantum/QuantumCredentialsDrillDown'), 'QuantumCredentialsDrillDown')
 
 const EventsDrillDown = safeLazy(() => import('./views/EventsDrillDown'), 'EventsDrillDown')
 
@@ -163,6 +164,7 @@ const getViewIcon = (type: string) => {
     case 'all-gpu': return <Cpu className="w-4 h-4 text-purple-400" />
     case 'all-storage': return <Package className="w-4 h-4 text-green-400" />
     case 'all-jobs': return <Rocket className="w-4 h-4 text-yellow-400" />
+    case 'quantum-credentials': return <Lock className="w-4 h-4 text-blue-400" />
     default: return null
   }
 }
@@ -301,6 +303,8 @@ export function DrillDownModal() {
         return <MultiClusterSummaryDrillDown data={data} viewType={type} />
       case 'custom':
         return state.currentView?.customComponent || <div>{t('drilldown.customView')}</div>
+      case 'quantum-credentials':
+        return <QuantumCredentialsDrillDown data={data} />
       default:
         return <div>{t('drilldown.unknownViewType')}</div>
     }

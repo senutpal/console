@@ -24,6 +24,48 @@ const DEMO_TOKEN = DEMO_TOKEN_VALUE
 const GPU_CACHE_KEY = 'kubestellar-gpu-cache'
 
 // ============================================================================
+// Quantum Workload Detection (auto-updated from /health endpoint)
+// ============================================================================
+
+/**
+ * Whether the quantum-kc-demo workload is available in the cluster.
+ * When false, quantum cards are forced into demo mode to prevent resource waste.
+ * Fetched from /health endpoint during app boot.
+ */
+let quantumWorkloadAvailable = false
+
+/**
+ * Get whether quantum-kc-demo workload is detected as running.
+ */
+export function isQuantumWorkloadAvailable(): boolean {
+  return quantumWorkloadAvailable
+}
+
+/**
+ * Set quantum workload availability (called after fetching /health).
+ * Automatically forces quantum cards into demo mode if workload is not available.
+ */
+export function setQuantumWorkloadAvailable(available: boolean): void {
+  quantumWorkloadAvailable = available
+
+  // If quantum workload not available, force demo mode (unless user explicitly disabled it)
+  if (!available && canToggleDemoMode()) {
+    const userExplicitlyDisabled = localStorage.getItem(DEMO_MODE_KEY) === 'false'
+    if (!userExplicitlyDisabled) {
+      setDemoMode(true, false) // auto-set for quantum, not user-initiated
+    }
+  }
+}
+
+/**
+ * Whether demo mode should be forced for quantum cards specifically.
+ * Returns true if quantum workload is not available (prevents resource waste).
+ */
+export function isQuantumForcedToDemo(): boolean {
+  return !quantumWorkloadAvailable
+}
+
+// ============================================================================
 // Environment Detection (computed once at module load, never changes)
 // ============================================================================
 

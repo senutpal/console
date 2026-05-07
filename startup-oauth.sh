@@ -205,6 +205,12 @@ else
     export FRONTEND_URL=http://localhost:8080
 fi
 
+# Quantum service URL — set to NodePort 30500 for local quantum-kc-demo backend
+# Can be overridden via .env (QUANTUM_SERVICE_URL=http://localhost:30500)
+if [ -z "$QUANTUM_SERVICE_URL" ]; then
+    export QUANTUM_SERVICE_URL=http://localhost:30500
+fi
+
 # Create data directory
 mkdir -p ./data
 

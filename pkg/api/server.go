@@ -209,6 +209,9 @@ type Server struct {
 	failureTracker      *middleware.FailureTracker // tracks auth failure counts for rate limiting
 	done                chan struct{}              // closed on Shutdown to stop background goroutines
 	shutdownOnce        sync.Once                  // ensures Shutdown is idempotent (#6478)
+	quantumWorkloadMu   sync.RWMutex               // protects quantum workload cache
+	quantumAvailable    bool                       // cached quantum-kc-demo availability
+	quantumCacheTime    time.Time                  // when quantum cache was last updated
 }
 
 // NewServer creates a new API server. It starts a temporary loading page
@@ -1023,6 +1026,14 @@ func (s *Server) setupRoutes() {
 	// Card proxy — allows Tier 2 custom cards to fetch external API data
 	cardProxy := handlers.NewCardProxyHandler(s.store)
 	api.Get("/card-proxy", cardProxy.Proxy)
+
+	// Quantum proxy — forwards requests to quantum-kc-demo backend
+	quantumProxy := handlers.NewQuantumProxyHandler()
+	api.Get("/quantum/*", quantumProxy.ProxyRequest)
+	api.Post("/quantum/*", quantumProxy.ProxyPostRequest)
+	api.Delete("/quantum/*", quantumProxy.ProxyRequest)
+	// Result histogram endpoint with dedicated handler (doesn't use wildcard params)
+	api.Get("/result/histogram", quantumProxy.ProxyResultHistogram)
 
 	// Swap routes
 	swaps := handlers.NewSwapHandler(s.store, s.hub)

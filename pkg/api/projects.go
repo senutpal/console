@@ -9,7 +9,7 @@ var projectDashboardPresets = map[string][]string{
 	"kubestellar": {
 		"dashboard", "clusters", "cluster-admin", "compliance", "deploy",
 		"insights", "ai-ml", "ai-agents", "acmm", "ci-cd",
-		"multi-tenancy", "alerts", "arcade",
+		"multi-tenancy", "alerts", "arcade", "quantum",
 		"llm-d-benchmarks", "gpu-reservations",
 		"compute", "security", "storage", "network", "events",
 		"workloads", "operators", "nodes", "deployments", "pods",

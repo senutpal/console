@@ -77,6 +77,9 @@ export const ROUTES = {
   // Persona dashboards
   CLUSTER_ADMIN: '/cluster-admin',
 
+  // Quantum Computing
+  QUANTUM: '/quantum',
+
   // Enterprise Compliance Portal
   ENTERPRISE: '/enterprise',
 

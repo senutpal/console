@@ -68,6 +68,7 @@ import { slsaDashboardConfig } from './slsa'
 import { riskMatrixDashboardConfig } from './risk-matrix'
 import { riskRegisterDashboardConfig } from './risk-register'
 import { riskAppetiteDashboardConfig } from './risk-appetite'
+import { quantumDashboardConfig } from './quantum'
 
 /**
  * Registry of all unified dashboard configurations
@@ -130,6 +131,7 @@ export const DASHBOARD_CONFIGS: DashboardConfigRegistry = {
   'risk-matrix': riskMatrixDashboardConfig,
   'risk-register': riskRegisterDashboardConfig,
   'risk-appetite': riskAppetiteDashboardConfig,
+  quantum: quantumDashboardConfig,
 }
 
 /**

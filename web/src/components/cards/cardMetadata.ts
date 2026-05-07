@@ -719,6 +719,13 @@ export const CARD_DESCRIPTIONS: Record<string, string> = {
   multi_tenancy_overview: 'Aggregated view of tenant isolation across OVN, KubeFlex, K3s, and KubeVirt.',
   tenant_isolation_setup: 'AI-powered multi-tenancy setup wizard with component detection and one-click configuration.',
   tenant_topology: 'Interactive SVG topology of the KubeCon multi-tenancy architecture: KubeVirt VMs, K3s control planes, Layer-2/3 UDN networks, and KubeFlex controller with live status indicators.',
+
+  // Quantum computing
+  quantum_status: 'Live status of the quantum circuit executor: backend connection, execution mode, shot count, and last run time.',
+  quantum_control_panel: 'Configure and trigger quantum circuit execution — select backend, QASM file, shot count, and toggle loop mode.',
+  quantum_qubit_grid: 'Pixel grid of qubit measurement outcomes; each cell represents a qubit state across recent shots.',
+  quantum_circuit_viewer: 'Renders the active QASM circuit diagram showing gates and circuit depth from the last execution.',
+  quantum_histogram: 'Measurement result histogram displaying bit-string outcome counts from the most recent circuit execution.',
 }
 
 /**

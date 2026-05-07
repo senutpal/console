@@ -593,11 +593,15 @@ export const Slack: LucideIcon = Object.assign(
   { displayName: 'Slack' },
 ) as unknown as LucideIcon
 
+// Import custom icons
+import { QiskitIcon } from '../components/ui/QiskitIcon'
+
 // Add custom icons to registry
 iconRegistry.KubernetesWheel = KubernetesWheel
 iconRegistry.Github = Github
 iconRegistry.Linkedin = Linkedin
 iconRegistry.Slack = Slack
+iconRegistry.Qiskit = QiskitIcon as unknown as LucideIcon
 
 /**
  * Resolve an icon component by name, falling back to HelpCircle if not found.

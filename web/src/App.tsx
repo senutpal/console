@@ -116,6 +116,7 @@ const MultiTenancy = safeLazy(() => import('./components/multi-tenancy/MultiTena
 const Drasi = safeLazy(() => import('./components/drasi/Drasi'), 'Drasi')
 const ACMM = safeLazy(() => import('./components/acmm/ACMM'), 'ACMM')
 const Marketplace = safeLazy(() => import('./components/marketplace/Marketplace'), 'Marketplace')
+const Quantum = safeLazy(() => import('./components/quantum/Quantum'), 'Quantum')
 const MiniDashboard = safeLazy(() => import('./components/widget/MiniDashboard'), 'MiniDashboard')
 const EmbedCard = safeLazy(() => import('./pages/EmbedCard'), 'EmbedCard')
 const Welcome = safeLazy(() => import('./pages/Welcome'), 'Welcome')
@@ -794,6 +795,7 @@ function FullDashboardApp({ liveLocation }: { liveLocation: Location }) {
           <Route path={ROUTES.DRASI} element={<SuspenseRoute><Drasi /></SuspenseRoute>} />
           <Route path={ROUTES.ACMM} element={<SuspenseRoute><ACMM /></SuspenseRoute>} />
           <Route path={ROUTES.MARKETPLACE} element={<SuspenseRoute><Marketplace /></SuspenseRoute>} />
+          <Route path={ROUTES.QUANTUM} element={<SuspenseRoute><Quantum /></SuspenseRoute>} />
           {/* Dev test routes for unified framework validation */}
           <Route path={ROUTES.TEST_UNIFIED_CARD} element={<UnifiedCardTest />} />
           <Route path={ROUTES.TEST_UNIFIED_STATS} element={<UnifiedStatsTest />} />

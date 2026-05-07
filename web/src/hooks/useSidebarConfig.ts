@@ -1,6 +1,7 @@
 import { useSyncExternalStore, useCallback } from 'react'
 import { FETCH_DEFAULT_TIMEOUT_MS } from '../lib/constants/network'
 import { setActiveProject } from '../lib/project/context'
+import { setQuantumWorkloadAvailable } from '../lib/demoMode'
 import { NAVIGATION_ICONS } from '../lib/navigationIcons'
 
 /** Width of the collapsed sidebar in pixels (w-20 = 5rem = 80px) */
@@ -72,7 +73,8 @@ export const DEFAULT_PRIMARY_NAV: SidebarItem[] = [
  * Users can add any of these to their sidebar via the customizer.
  */
 export const DISCOVERABLE_DASHBOARDS: SidebarItem[] = [
-  { id: 'compute', name: 'Compute', icon: NAVIGATION_ICONS['compute'], href: '/compute', type: 'link', order: 0 },
+  { id: 'quantum', name: 'Quantum Demo', icon: NAVIGATION_ICONS['quantum'], href: '/quantum', type: 'link', order: 0 },
+  { id: 'compute', name: 'Compute', icon: NAVIGATION_ICONS['compute'], href: '/compute', type: 'link', order: 1 },
   { id: 'cost', name: 'Cost', icon: NAVIGATION_ICONS['cost'], href: '/cost', type: 'link', order: 2 },
   { id: 'data-compliance', name: 'Data Compliance', icon: NAVIGATION_ICONS['data-compliance'], href: '/data-compliance', type: 'link', order: 3 },
   { id: 'deployments', name: 'Deployments', icon: NAVIGATION_ICONS['deployments'], href: '/deployments', type: 'link', order: 4 },
@@ -164,10 +166,17 @@ export async function fetchEnabledDashboards(): Promise<void> {
   try {
     const resp = await fetch('/health', { signal: AbortSignal.timeout(FETCH_DEFAULT_TIMEOUT_MS) })
     const data = await resp.json()
+
     // Set active project context for white-label filtering
     if (data.project && typeof data.project === 'string') {
       setActiveProject(data.project)
     }
+
+    // Set quantum workload availability (auto-locks demo mode if not available)
+    if (data.workloads && typeof data.workloads.quantum_kc_demo_available === 'boolean') {
+      setQuantumWorkloadAvailable(data.workloads.quantum_kc_demo_available)
+    }
+
     if (data.enabled_dashboards && Array.isArray(data.enabled_dashboards) && data.enabled_dashboards.length > 0) {
       enabledDashboardIds = data.enabled_dashboards as string[]
       if (sharedConfig) {

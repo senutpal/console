@@ -56,6 +56,8 @@ export type DrillDownViewType =
   | 'all-gpu'
   | 'all-storage'
   | 'all-jobs'
+  // Quantum computing views
+  | 'quantum-credentials'
 
 export interface DrillDownView {
   type: DrillDownViewType
