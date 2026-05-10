@@ -273,18 +273,28 @@ func (h *GitOpsHandlers) GetArgoHealthSummary(c *fiber.Ctx) error {
 	}
 
 	for _, app := range appList.Items {
+		var key string
 		switch app.HealthStatus {
 		case "Healthy":
-			summary["healthy"] = summary["healthy"].(int) + 1
+			key = "healthy"
 		case "Degraded":
-			summary["degraded"] = summary["degraded"].(int) + 1
+			key = "degraded"
 		case "Progressing":
-			summary["progressing"] = summary["progressing"].(int) + 1
+			key = "progressing"
 		case "Missing":
-			summary["missing"] = summary["missing"].(int) + 1
+			key = "missing"
 		default:
-			summary["unknown"] = summary["unknown"].(int) + 1
+			key = "unknown"
 		}
+		count := 0
+		if current, exists := summary[key]; exists {
+			if v, ok := current.(int); ok {
+				count = v
+			} else {
+				slog.Warn("[ArgoCD] unexpected counter type in health summary", "key", key, "type", fmt.Sprintf("%T", current))
+			}
+		}
+		summary[key] = count + 1
 	}
 
 	return c.JSON(fiber.Map{
@@ -323,14 +333,24 @@ func (h *GitOpsHandlers) GetArgoSyncSummary(c *fiber.Ctx) error {
 	}
 
 	for _, app := range appList.Items {
+		var key string
 		switch app.SyncStatus {
 		case "Synced":
-			summary["synced"] = summary["synced"].(int) + 1
+			key = "synced"
 		case "OutOfSync":
-			summary["outOfSync"] = summary["outOfSync"].(int) + 1
+			key = "outOfSync"
 		default:
-			summary["unknown"] = summary["unknown"].(int) + 1
+			key = "unknown"
 		}
+		count := 0
+		if current, exists := summary[key]; exists {
+			if v, ok := current.(int); ok {
+				count = v
+			} else {
+				slog.Warn("[ArgoCD] unexpected counter type in sync summary", "key", key, "type", fmt.Sprintf("%T", current))
+			}
+		}
+		summary[key] = count + 1
 	}
 
 	return c.JSON(fiber.Map{
