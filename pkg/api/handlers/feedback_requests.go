@@ -1117,7 +1117,13 @@ func (h *FeedbackHandler) CloseRequest(c *fiber.Ctx) error {
 	if err := h.store.CloseFeatureRequest(c.UserContext(), requestID, true); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to close request")
 	}
-	request, _ = h.store.GetFeatureRequest(c.UserContext(), requestID)
+	if refreshed, err := h.store.GetFeatureRequest(c.UserContext(), requestID); err == nil && refreshed != nil {
+		request = refreshed
+	} else if err != nil {
+		slog.Warn("[Feedback] failed to refresh request after close", "id", requestID, "error", err)
+	} else {
+		slog.Warn("[Feedback] refresh returned nil request after close", "id", requestID)
+	}
 	return c.JSON(request)
 }
 
@@ -1209,7 +1215,13 @@ func (h *FeedbackHandler) ReopenRequest(c *fiber.Ctx) error {
 	if err := h.store.UpdateFeatureRequestStatus(c.UserContext(), requestID, models.RequestStatusTriageAccepted); err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "Failed to reopen request")
 	}
-	request, _ = h.store.GetFeatureRequest(c.UserContext(), requestID)
+	if refreshed, err := h.store.GetFeatureRequest(c.UserContext(), requestID); err == nil && refreshed != nil {
+		request = refreshed
+	} else if err != nil {
+		slog.Warn("[Feedback] failed to refresh request after reopen", "id", requestID, "error", err)
+	} else {
+		slog.Warn("[Feedback] refresh returned nil request after reopen", "id", requestID)
+	}
 	return c.JSON(request)
 }
 
