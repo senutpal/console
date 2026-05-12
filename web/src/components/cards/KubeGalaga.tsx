@@ -528,6 +528,7 @@ export function KubeGalaga() {
               <span
                 role="button"
                 tabIndex={0}
+                aria-label="Start Kube Galaga game"
                 onClick={startGame}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startGame() } }}
                 className="flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 rounded text-white cursor-pointer"
@@ -544,6 +545,7 @@ export function KubeGalaga() {
               <span
                 role="button"
                 tabIndex={0}
+                aria-label="Resume Kube Galaga game"
                 onClick={togglePause}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePause() } }}
                 className="flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 rounded text-white cursor-pointer"
@@ -562,6 +564,7 @@ export function KubeGalaga() {
               <span
                 role="button"
                 tabIndex={0}
+                aria-label={`Start level ${level} of Kube Galaga`}
                 onClick={nextLevel}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); nextLevel() } }}
                 className="flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 rounded text-white cursor-pointer"
@@ -583,6 +586,7 @@ export function KubeGalaga() {
               <span
                 role="button"
                 tabIndex={0}
+                aria-label="Play Kube Galaga again"
                 onClick={startGame}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); startGame() } }}
                 className="flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 rounded text-white cursor-pointer"
