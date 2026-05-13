@@ -140,6 +140,10 @@ func (h *ConsolePersistenceHandlers) StartWatcher(ctx context.Context) error {
 		return nil
 	}
 
+	if h.k8sClient == nil {
+		return fmt.Errorf("%s", noClusterAccessMsg)
+	}
+
 	activeCluster, err := h.persistenceStore.GetActiveCluster(ctx)
 	if err != nil {
 		slog.Warn("[ConsolePersistence] cannot start watcher", "error", err)
