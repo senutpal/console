@@ -17,6 +17,7 @@ import {
   TrendingUp, TrendingDown, Minus, Loader2, Search, Stethoscope,
   ClipboardCheck,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useDemoMode } from '../../../hooks/useDemoMode'
 import { useCardLoadingState } from '../CardDataContext'
 import {
@@ -279,6 +280,7 @@ function StandaloneRepoInput({ value, onChange }: { value: string; onChange: (v:
 // ---------------------------------------------------------------------------
 
 export function NightlyReleasePulse() {
+  const { t } = useTranslation('cards')
   const { startMission } = useMissions()
   const shared = usePipelineFilter()
   const [standaloneRepo, setStandaloneRepo] = useState('')
@@ -334,7 +336,7 @@ export function NightlyReleasePulse() {
 
   if (pulseError && !hasData) {
     return <div className="p-4 h-full flex items-center justify-center text-sm text-red-400">
-      Failed to load release pulse. {pulseError}
+      {t('pipelines.failedToLoadReleasePulse')} {pulseError}
     </div>
   }
 
