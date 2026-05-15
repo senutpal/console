@@ -33,7 +33,7 @@ const getIssueIcon = (status: string | undefined): { icon: typeof MemoryStick; t
 }
 
 export function PodIssues() {
-  const { t } = useTranslation()
+  const { t } = useTranslation(['cards', 'common'])
   const { deduplicatedClusters } = useClusters()
   const {
     issues: rawIssues,
@@ -117,8 +117,8 @@ export function PodIssues() {
     return (
       <CardEmptyState
         icon={AlertTriangle}
-        title="Failed to load pod data"
-        message={error || 'Pod API is unavailable'}
+        title={t('podIssues.failedLoadTitle', 'Failed to load pod data')}
+        message={error || t('podIssues.apiUnavailable', 'Pod API is unavailable')}
         variant="error"
       />
     )
@@ -128,14 +128,14 @@ export function PodIssues() {
     return hasClusters ? (
       <CardEmptyState
         icon={CheckCircle}
-        title="All pods healthy"
-        message="No issues detected"
+        title={t('podIssues.allHealthy', 'All pods healthy')}
+        message={t('podIssues.noIssuesDetected', 'No issues detected')}
         variant="success"
       />
     ) : (
       <CardEmptyState
-        title="No clusters connected"
-        message="Pod health will appear here after you connect a cluster"
+        title={t('clusterHealth.noClustersConfigured')}
+        message={t('clusterHealth.addClustersPrompt')}
       />
     )
   }
@@ -165,7 +165,7 @@ export function PodIssues() {
         <CardSearchInput
           value={localSearch}
           onChange={setLocalSearch}
-          placeholder={t('common.searchIssues')}
+          placeholder={t('common:common.searchIssues')}
           className="mb-0 w-full min-w-0 sm:flex-1"
         />
         <CardControlsRow
