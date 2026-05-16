@@ -24,7 +24,7 @@ import { execSync } from 'child_process'
 // ---------------------------------------------------------------------------
 
 const AGENT_MODE = process.env.KC_AGENT === 'true'
-const SKIP_KIND_TESTS = !AGENT_MODE || process.env.CI === 'true'
+const SKIP_KIND_TESTS = !AGENT_MODE || (process.env.CI === 'true' && process.env.MC_KIND_E2E !== 'true')
 
 const AGENT_BASE_URL = 'http://127.0.0.1:8585'
 
@@ -289,7 +289,7 @@ async function seedAndOpenMC(page: Page, overrides: Record<string, unknown>) {
 
 test.describe('Mission Control Kind Cluster E2E', () => {
   test.describe.configure({ timeout: DEPLOY_TIMEOUT_MS })
-  test.skip(SKIP_KIND_TESTS, 'Requires KC_AGENT=true, Docker, and kind CLI — not run in CI')
+  test.skip(SKIP_KIND_TESTS, 'Requires KC_AGENT=true, Docker, and kind CLI — set MC_KIND_E2E=true to enable in CI')
 
   // ========================================================================
   // GROUP 0: Cluster Provisioning via Console API
