@@ -496,7 +496,8 @@ if [ -x "$INSTALL_DIR/kc-agent" ]; then
     if [ ! -f "$AGENT_PID_FILE" ]; then
         echo "Starting kc-agent as background daemon..."
         nohup "$INSTALL_DIR/kc-agent" >> "$AGENT_LOG_FILE" 2>&1 &
-        echo $! > "$AGENT_PID_FILE"
+        TMP_PID_FILE="${AGENT_PID_FILE}.$$"
+        echo $! > "$TMP_PID_FILE" && mv "$TMP_PID_FILE" "$AGENT_PID_FILE"
         sleep 1
 
         # Verify it started
