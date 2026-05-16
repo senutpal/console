@@ -10,6 +10,8 @@ import {
   setDemoToken,
   getDemoMode,
   setGlobalDemoMode,
+  setQuantumWorkloadAvailable,
+  isQuantumForcedToDemo,
 } from '../demoMode'
 
 describe('isDemoMode', () => {
@@ -283,5 +285,47 @@ describe('cross-tab storage event sync', () => {
 
     expect(capturedValue).toBeNull()
     unsub()
+  })
+})
+
+// ── setQuantumWorkloadAvailable must NOT touch global demo mode ──
+
+describe('setQuantumWorkloadAvailable', () => {
+  beforeEach(() => {
+    localStorage.clear()
+    setDemoMode(false, true)
+    setQuantumWorkloadAvailable(true)
+  })
+
+  it('setting available=false does not enable global demo mode', () => {
+    setQuantumWorkloadAvailable(false)
+    expect(isDemoMode()).toBe(false)
+  })
+
+  it('setting available=true does not disable global demo mode', () => {
+    setDemoMode(true, true)
+    setQuantumWorkloadAvailable(true)
+    expect(isDemoMode()).toBe(true)
+  })
+
+  it('isQuantumForcedToDemo returns true when workload unavailable', () => {
+    setQuantumWorkloadAvailable(false)
+    expect(isQuantumForcedToDemo()).toBe(true)
+  })
+
+  it('isQuantumForcedToDemo returns false when workload available', () => {
+    setQuantumWorkloadAvailable(true)
+    expect(isQuantumForcedToDemo()).toBe(false)
+  })
+
+  it('global demo mode and quantum demo mode are independent', () => {
+    setQuantumWorkloadAvailable(false)
+    expect(isDemoMode()).toBe(false)
+    expect(isQuantumForcedToDemo()).toBe(true)
+
+    setDemoMode(true, true)
+    setQuantumWorkloadAvailable(true)
+    expect(isDemoMode()).toBe(true)
+    expect(isQuantumForcedToDemo()).toBe(false)
   })
 })

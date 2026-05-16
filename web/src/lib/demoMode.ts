@@ -43,18 +43,10 @@ export function isQuantumWorkloadAvailable(): boolean {
 
 /**
  * Set quantum workload availability (called after fetching /health).
- * Automatically forces quantum cards into demo mode if workload is not available.
+ * Quantum cards read isQuantumForcedToDemo() directly — no global demo mode change needed.
  */
 export function setQuantumWorkloadAvailable(available: boolean): void {
   quantumWorkloadAvailable = available
-
-  // If quantum workload not available, force demo mode (unless user explicitly disabled it)
-  if (!available && canToggleDemoMode()) {
-    const userExplicitlyDisabled = localStorage.getItem(DEMO_MODE_KEY) === 'false'
-    if (!userExplicitlyDisabled) {
-      setDemoMode(true, false) // auto-set for quantum, not user-initiated
-    }
-  }
 }
 
 /**
