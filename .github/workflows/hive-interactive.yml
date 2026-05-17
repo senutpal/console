@@ -19,6 +19,7 @@ jobs:
       (github.event_name == 'issues' && github.event.issue.user.type != 'Bot') ||
       (github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.user.type != 'Bot')
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Post hive interaction directions
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
@@ -50,6 +51,7 @@ jobs:
       github.event.comment.user.type != 'Bot' &&
       contains(github.event.comment.body, '@kubestellar-hive')
     uses: ./.github/workflows/hive-trust-gate.yml
+    timeout-minutes: 5
     permissions:
       contents: read
       issues: write
@@ -69,6 +71,7 @@ jobs:
       contains(github.event.comment.body, '@kubestellar-hive') &&
       needs.trust-gate.outputs.is-trusted == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     concurrency:
       group: hive-interactive-${{ github.event.issue.number }}-${{ github.event.comment.id }}
       cancel-in-progress: false

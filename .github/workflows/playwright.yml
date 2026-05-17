@@ -29,6 +29,7 @@ jobs:
   build:
     name: Build Frontend
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: web
@@ -123,6 +124,7 @@ jobs:
     needs: test
     if: always()
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: web

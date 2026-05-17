@@ -13,6 +13,7 @@ permissions:
 jobs:
   check-hold-issues:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     # Run on PR events always; on issue events only when the hold label is involved
     if: >-
       (github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name == github.repository) ||

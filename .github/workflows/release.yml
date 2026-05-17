@@ -35,9 +35,11 @@ env:
 jobs:
   helm-test:
     uses: ./.github/workflows/helm-test.yml
+    timeout-minutes: 20
 
   determine-version:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     outputs:
       version: ${{ steps.version.outputs.version }}
       release_name: ${{ steps.version.outputs.release_name }}
@@ -160,6 +162,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: determine-version
     if: needs.determine-version.outputs.has_changes == 'true'
     outputs:
@@ -500,6 +503,7 @@ jobs:
   helm-release:
     needs: [determine-version, release, docker-manifest, helm-test]
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     if: needs.release.result == 'success'
     permissions:
       contents: write
@@ -575,6 +579,7 @@ jobs:
   notify:
     needs: [determine-version, test, release, helm-release]
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: always()
     permissions:
       issues: write

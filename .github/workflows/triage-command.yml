@@ -22,6 +22,7 @@ jobs:
       !github.event.issue.pull_request &&
       startsWith(github.event.comment.body, '/triage accepted')
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Check commenter permissions
@@ -230,6 +231,7 @@ jobs:
       github.event.label.name == 'triage/accepted' &&
       !github.event.issue.pull_request
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Skip if Copilot is already assigned

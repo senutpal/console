@@ -42,6 +42,7 @@ permissions:
 jobs:
   evaluate:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     outputs:
       is-trusted: ${{ steps.trust.outputs.is-trusted }}
       trust-reason: ${{ steps.trust.outputs.trust-reason }}

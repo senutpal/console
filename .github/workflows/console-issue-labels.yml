@@ -10,6 +10,7 @@ permissions:
 jobs:
   label:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: >-
       contains(github.event.issue.body, 'automatically created from the KubeStellar Console') ||
       contains(github.event.issue.body, 'Submitted via KubeStellar Console')
