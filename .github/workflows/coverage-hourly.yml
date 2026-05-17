@@ -260,6 +260,7 @@ jobs:
           retention-days: 30
 
       - name: Update coverage badge gist (with regression guard)
+        if: steps.failures.outputs.count == '0' && needs.test-shard.result != 'failure'
         uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           GIST_ID: ${{ env.GIST_ID }}
@@ -465,7 +466,7 @@ jobs:
                   ``,
                   failedSection,
                   ``,
-                  `Coverage was still merged and the badge updated (currently **${{ steps.cov.outputs.pct }}%**), but the failing tests need attention.`,
+                  `Coverage was merged. Badge update was skipped due to a test shard failure.`,
                   ``,
                   `### Action needed`,
                   `1. For each failing test, determine if it's a **test update needed** or a **potential regression**`,
@@ -481,5 +482,5 @@ jobs:
       - name: Fail if any shard failed
         if: needs.test-shard.result == 'failure'
         run: |
-          echo "::error::One or more test shards failed. Coverage was still merged and badge updated, but this workflow is marked as failed."
+          echo "::error::One or more test shards failed. Coverage was merged; badge update was skipped."
           exit 1

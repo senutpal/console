@@ -63,7 +63,7 @@ jobs:
           fi
 
           echo "status=run" >> "$GITHUB_OUTPUT"
-          npx vitest run --coverage --reporter=verbose 2>&1 | tail -40 || true
+          npx vitest run --coverage --reporter=verbose 2>&1 | tail -40
 
       - name: Check coverage against threshold
         id: gate
@@ -75,6 +75,10 @@ jobs:
           SUMMARY_FILE="coverage/coverage-summary.json"
 
           if [ ! -f "$SUMMARY_FILE" ]; then
+            if [ "${{ steps.run-tests.outputs.status }}" = "run" ]; then
+              echo "::error::vitest ran but produced no coverage-summary.json — gate fails"
+              exit 1
+            fi
             echo "::warning::No coverage summary found — cannot enforce gate"
             echo "status=skip" >> "$GITHUB_OUTPUT"
             exit 0
