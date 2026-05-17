@@ -7,6 +7,27 @@ const STELLAR_ACTIVITY_LIMIT = 200
 const STELLAR_DEFAULT_FETCH_LIMIT = 50
 const STELLAR_RECONNECT_BASE_MS = 1000
 const STELLAR_RECONNECT_MAX_MS = 30000
+export const STELLAR_TOKEN_POLL_INTERVAL_MS = 100
+export const STELLAR_TOKEN_POLL_MAX_ATTEMPTS = 30
+
+/** Dispatched on window when the shared SSE receives a mission_trigger event. */
+export const STELLAR_MISSION_TRIGGER_EVENT = 'stellar:mission_trigger'
+
+export interface StellarMissionTriggerPayload {
+  solveId: string
+  eventId: string
+  cluster: string
+  namespace: string
+  workload: string
+  reason: string
+  message: string
+  title: string
+  prompt: string
+}
+
+function hasStellarAuthCredentials(): boolean {
+  return Boolean(localStorage.getItem('token') || document.cookie.includes('kc_auth'))
+}
 
 function parseStellarEvent<T>(event: Event, eventName: string): T | null {
   try {
@@ -103,8 +124,8 @@ function useStellarSource() {
   }, [])
 
   const connectSSE = useCallback(() => {
-    if (esRef.current) {
-      esRef.current.close()
+    if (esRef.current && esRef.current.readyState !== EventSource.CLOSED) {
+      return
     }
     const es = new EventSource('/api/stellar/stream', { withCredentials: true })
     esRef.current = es
@@ -315,6 +336,13 @@ function useStellarSource() {
       // Treat scheduled digest as a high-priority proactive nudge
       setNudge({ id: crypto.randomUUID(), summary: digest.content, ts: new Date().toISOString() })
     })
+    es.addEventListener('mission_trigger', (e) => {
+      const payload = parseStellarEvent<StellarMissionTriggerPayload>(e, 'mission_trigger')
+      if (!payload) {
+        return
+      }
+      window.dispatchEvent(new CustomEvent(STELLAR_MISSION_TRIGGER_EVENT, { detail: payload }))
+    })
   }, [])
 
   useEffect(() => {
@@ -322,40 +350,55 @@ function useStellarSource() {
   }, [connectSSE])
 
   useEffect(() => {
+    let cancelled = false
+    let tokenPollIntervalId: ReturnType<typeof setInterval> | undefined
+
+    const clearTokenPollInterval = () => {
+      if (tokenPollIntervalId !== undefined) {
+        clearInterval(tokenPollIntervalId)
+        tokenPollIntervalId = undefined
+      }
+    }
+
     const waitForToken = (): Promise<void> => {
       return new Promise((resolve) => {
-        if (localStorage.getItem('token') || document.cookie.includes('kc_auth')) {
+        if (hasStellarAuthCredentials()) {
           resolve()
           return
         }
         let attempts = 0
-        const interval = setInterval(() => {
+        tokenPollIntervalId = setInterval(() => {
           attempts++
-          if (localStorage.getItem('token') || document.cookie.includes('kc_auth') || attempts > 30) {
-            clearInterval(interval)
+          if (hasStellarAuthCredentials() || attempts > STELLAR_TOKEN_POLL_MAX_ATTEMPTS) {
+            clearTokenPollInterval()
             resolve()
           }
-        }, 100)
+        }, STELLAR_TOKEN_POLL_INTERVAL_MS)
       })
     }
 
     const initialize = async () => {
       await waitForToken()
+      if (cancelled) return
+      if (!hasStellarAuthCredentials()) return
 
       try {
         await refreshState()
       } catch (err) {
         console.warn('stellar: init failed:', err)
       }
-      
-      // Always connect SSE — even if init failed or cancelled by HMR
+
+      if (cancelled) return
       connectSSE()
     }
 
     void initialize()
 
     return () => {
+      cancelled = true
+      clearTokenPollInterval()
       esRef.current?.close()
+      esRef.current = null
     }
   }, []) // Empty deps — run once on mount, never re-run
 
@@ -556,7 +599,7 @@ export function StellarProvider({ children }: { children: ReactNode }) {
 
 // useStellar consumes the provider value. Called outside a StellarProvider it
 // returns a no-op fallback so a stray component doesn't crash the page; in
-// practice every page renders under <StellarProvider /> mounted in App.tsx.
+// practice every page renders under <StellarProvider /> in the authenticated app shell.
 export function useStellar(): StellarContextValue {
   const ctx = useContext(StellarContext)
   if (ctx) return ctx
