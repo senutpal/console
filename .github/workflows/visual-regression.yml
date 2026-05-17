@@ -48,20 +48,28 @@ jobs:
       - name: Build frontend
         run: npm run build
 
+      - name: Start preview server
+        run: nohup npm run preview -- --port 4173 > /tmp/preview.log 2>&1 &
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
+
+      - name: Wait for preview server
+        run: timeout 30 bash -c 'until curl -sf http://localhost:4173 > /dev/null; do sleep 1; done'
 
       - name: Run visual regression tests
         if: steps.check-baselines.outputs.baselines_exist == 'true'
         run: npm run test:visual
         env:
           CI: 'true'
+          APP_VISUAL_BASE_URL: 'http://localhost:4173'
 
       - name: Generate baseline snapshots
         if: steps.check-baselines.outputs.baselines_exist == 'false'
         run: npm run test:visual:update
         env:
           CI: 'true'
+          APP_VISUAL_BASE_URL: 'http://localhost:4173'
 
       - name: Upload generated baselines
         if: steps.check-baselines.outputs.baselines_exist == 'false'
